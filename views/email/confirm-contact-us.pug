@@ -1,0 +1,12 @@
+extends base-email
+
+block content
+  p Hello #{contactName},
+  p Thank you for reaching out! We've received your message and will respond as soon as possible.
+  p We typically respond within 1-2 business days. For urgent matters, please contact us directly at:
+  p
+    a(href=`mailto:${supportEmail}`) #{supportEmail}
+  
+  p Thank you for contacting us!
+  p Best regards,
+  p AlAA INPUT Team

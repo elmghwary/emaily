@@ -3,7 +3,6 @@ const successMessage = document.getElementById("successMessage");
 
 form?.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   const formData = new FormData(form);
   const data = {
     name: formData.get("name"),
@@ -11,15 +10,17 @@ form?.addEventListener("submit", async (e) => {
     subject: formData.get("subject"),
     message: formData.get("message"),
   };
-  console.log(data);
   try {
-    // const response = await fetch("http://localhost:3636/api/v1/contactUs", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(data),
-    // });
+    const response = await fetch(
+      "https://soft-fudge-2c6514.netlify.app/api/v1/contactUs",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
     if (response.ok && successMessage) {
       // form.reset();
       successMessage.style.display = "block";

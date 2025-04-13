@@ -32,7 +32,7 @@ const globalErrorHandler = (
   err.status = err.status || "error";
 
   sendError(err, req, res);
-  // if (process.env.NODE_ENV === "development") {
+  // if (process.env.NODE_ENV !== "production") {
   // } else {
   //   res.status(err.statusCode).json({
   //     status: err.status,

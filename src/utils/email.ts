@@ -49,7 +49,7 @@ abstract class EmailSender {
 
   constructor(
     config: EmailSenderConfig,
-    templateDir: string = path.join(__dirname, "../views/email")
+    templateDir: string = path.join(process.cwd(), "src/views/email")
   ) {
     this.transporter = nodemailer.createTransport(config);
     this.templateDir = templateDir;
@@ -89,7 +89,7 @@ class ContactConfirmationEmail extends EmailSender {
   async send(params: {
     recipient: ContactDetails;
     sender: ContactDetails;
-    message: string;
+    message?: string;
     supportEmail?: string;
   }): Promise<SendEmailResult> {
     const content = this.prepareContent(params);
@@ -107,14 +107,14 @@ class ContactConfirmationEmail extends EmailSender {
   private prepareContent(params: {
     recipient: ContactDetails;
     sender: ContactDetails;
-    message: string;
+    message?: string;
     supportEmail?: string;
   }): EmailContent {
     const html = this.renderTemplate("confirm-contact-us", {
       contactName: this.getFirstName(params.recipient.name),
       contactEmail: params.recipient.email,
       supportEmail: params.supportEmail || params.sender.email,
-      message: params.message,
+      message: "Thank you for contacting us!",
     });
 
     return {
@@ -203,25 +203,30 @@ export class EmailServiceFactory {
 
   private static getTransportConfig(): EmailSenderConfig {
     if (process.env.NODE_ENV === "production") {
+      if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+        throw new Error("GMAIL USER && PASSWORD is not defined in production!");
+      }
       return {
         service: "gmail",
         host: "smtp.gmail.com",
         port: 465,
         secure: true,
         auth: {
-          user: process.env.GMAIL_USER!,
-          pass: process.env.GMAIL_PASS!,
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASS,
         },
       };
     }
-
+    if (!process.env.EMAIL_HOST || !process.env.EMAIL_PORT) {
+      throw new Error("GMAIL USER && PASSWORD is not defined in production!");
+    }
     return {
-      host: process.env.EMAIL_HOST!,
-      port: parseInt(process.env.EMAIL_PORT!),
+      host: process.env.EMAIL_HOST,
+      port: parseInt(process.env.EMAIL_PORT),
       secure: false,
       auth: {
-        user: process.env.EMAIL_USERNAME!,
-        pass: process.env.EMAIL_PASSWORD!,
+        user: process.env.EMAIL_USERNAME || "",
+        pass: process.env.EMAIL_PASSWORD || "",
       },
     };
   }

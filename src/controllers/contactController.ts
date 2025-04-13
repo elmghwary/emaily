@@ -8,7 +8,13 @@ export const contactUs = catchAsync(async (req, res, next) => {
   }
 
   try {
-    const { name, email, subject, message } = req.body;
+    let body = req.body;
+
+    if (Buffer.isBuffer(body)) {
+      body = JSON.parse(body.toString());
+    }
+
+    const { name, email, subject, message } = body;
     if (!name || !email || !subject || !message) {
       return next(new AppError("All fields are required!", 400));
     }
@@ -31,7 +37,6 @@ export const contactUs = catchAsync(async (req, res, next) => {
       await EmailServiceFactory.createContactConfirmationSender().send({
         recipient: { name, email },
         sender: { name: "Support Team", email: process.env.SUPPORT_EMAIL },
-        message: "Thank you for contacting us!",
       });
     if (!confirm.success) {
       return next(new AppError(confirm.message, confirm.statusCode));

@@ -157,3 +157,6 @@ node_modules_*
 
 .babel.json
 package.json.bak
+
+# Local Netlify folder
+.netlify
